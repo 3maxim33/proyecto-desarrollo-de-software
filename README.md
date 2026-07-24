@@ -4,7 +4,7 @@
 - Simón Ranilao
 - Ismael Salas
 - Martin Estay
-- Catalina
+- Catalina Figueroa
 - Maximiliano Pasten
 
 ## Tecnologías
