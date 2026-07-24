@@ -2,11 +2,11 @@
 
 ## Integrantes
 
-- Simón Ranilao
-- Ismael Salas
-- Martin Estay
-- Catalina Figueroa
-- Maximiliano Pasten
+- Simón Ranilao simon.ranilao@usach.cl
+- Ismael Salas ismael.salas@usach.cl
+- Martin Estay martin.estay@usach.cl
+- Catalina Figueroa catalina.figueroa.b@usach.cl
+- Maximiliano Pasten maximiliano.pasten.u@usach.cl
 
 ## Instalación
 
