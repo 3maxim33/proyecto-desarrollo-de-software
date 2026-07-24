@@ -1,11 +1,11 @@
 # proyecto-desarrollo-de-software
 ## Integrantes
 
--Simón Ranilao
--Ismael Salas
--Martin Estay
--Catalina
--Maximiliano Pasten
+- Simón Ranilao
+- Ismael Salas
+- Martin Estay
+- Catalina
+- Maximiliano Pasten
 
 ## Tecnologías
 
