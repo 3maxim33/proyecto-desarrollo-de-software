@@ -35,10 +35,13 @@ cd proyecto-desarrollo-de-software
 (revisar texto de requerimientos):
 pip install ...
 ```
+### 3. Ejecución de Pruebas:
+```bash
+pytest
+```
 
-### 3. Ejecutar la aplicación:
+### 4. Ejecutar la aplicación:
 
 ```bash
 streamlit run app.py
 ```
-## Pruebas
