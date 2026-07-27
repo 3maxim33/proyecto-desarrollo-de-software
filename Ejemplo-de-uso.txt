@@ -1,4 +1,0 @@
-Tras poner en marcha el software luego de seguir los pasos de instalación, se iniciará en la pestaña principal donde se mostrará el catálogo de exoplanetas descubiertos.
-se mostrará el explorador visual donde podrá observar y configurar los distintos ejes del gráfico a distintos parámetros tales como masa de planetas en función de Tierra, excentricidad orbital, periodo orbital, y algunas más.
-También se puede personalizar el mapa de color de los exoplanetas mostrados en el gráfico, por defecto está programado para mostrar el método de detección utilizado para encontrarlos.
-El software incluye otras pestañas como sistemas multiplanetarios detectados, un análisis a fondo del sistema que uno escoja, y en la última pestaña podemos ver el catálogo completo de exoplanetas con opción de descargar un archivo en formato CSV (Comma separated values).
