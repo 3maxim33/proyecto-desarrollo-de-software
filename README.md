@@ -27,12 +27,7 @@ git clone https://github.com/3maxim33/proyecto-desarrollo-de-software.git
 cd proyecto-desarrollo-de-software
 ```
 
-### 2. Crear un entorno virtual (opcional):
 
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-```
 
 ### 3. Instalar dependencias:
 
