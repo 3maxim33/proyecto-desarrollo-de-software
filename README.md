@@ -47,5 +47,5 @@ PYTHONPATH=src streamlit run app.py
 
 ## Ejemplo de Uso (ya dentro de la web)
 
-Tras poner en marcha la web gracias a la instalación, nos encontraremos con el catalogo de exoplanetas que posee Atlas, tambien se mostrara el explorador virtual donde podran observar y modificar parametros de los graficos presentados en Atlas, tales como masa de planetas en funcion de la Tierra, exentricidad orbital, y otras mas que estan disponibles en la web.
-Otra caracteristica que pueden ir modificando es el mapa de color de los exoplanetas mostrados en el grafico.
+Tras poner en marcha la web gracias a la instalación, nos encontraremos con el catálogo de exoplanetas que posee Atlas, también se mostrará el explorador virtual donde podran observar y modificar parámetros de los gráficos presentados en Atlas, tales como masa de planetas en función de la Tierra, exentricidad orbital, y otras más que estan disponibles en la web.
+Otra característica que pueden ir modificando es el mapa de color de los exoplanetas mostrados en el grafico.
