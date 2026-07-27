@@ -43,5 +43,5 @@ pytest
 ### 4. Ejecutar la aplicación:
 
 ```bash
-streamlit run app.py
+PYTHONPATH=src streamlit run app.py
 ```
