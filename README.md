@@ -27,8 +27,6 @@ git clone https://github.com/3maxim33/proyecto-desarrollo-de-software.git
 cd proyecto-desarrollo-de-software
 ```
 
-
-
 ### 2. Instalar dependencias:
 
 ```bash
@@ -38,10 +36,12 @@ pip install ...
 ### 3. Ejecución de Pruebas:
 ```bash
 pytest
+(Gracias a la libreria de pytest, con este comando podemos ejecutar las pruebas que llevamos hasta el momento del proyecto)
 ```
 
 ### 4. Ejecutar la aplicación:
 
 ```bash
 PYTHONPATH=src streamlit run app.py
+(PYTHONPATH ya que "python" debe enfocarse en la carpeta de src para que streamlit pueda arrancar, ya que en esa carpeta se encuentran los archivos).
 ```
