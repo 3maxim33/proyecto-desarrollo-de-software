@@ -30,8 +30,7 @@ cd proyecto-desarrollo-de-software
 ### 2. Instalar dependencias:
 
 ```bash
-(revisar texto de requerimientos):
-pip install ...
+pip install -r requerimientos.txt
 ```
 ### 3. Ejecución de Pruebas:
 ```bash
