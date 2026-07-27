@@ -6,7 +6,7 @@ En este proyecto se nos asigno la tarea de crear un sitio inspirandonos en lo qu
 [En Desarrollo]
 Ultimas etapas del codigo base y corrigiendo los errores.
 
-##Clientes del Proyecto
+## Clientes del Proyecto
 - Rubén Montecinos
 - Marcela Best Reyes
 
