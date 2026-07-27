@@ -44,3 +44,7 @@ pytest
 PYTHONPATH=src streamlit run app.py
 (PYTHONPATH ya que "python" debe enfocarse en la carpeta de src para que streamlit pueda arrancar, ya que en esa carpeta se encuentran los archivos).
 ```
+## Ejemplo de Uso (ya dentro de la web)
+
+Tras poner en marcha la web gracias a la instalación, nos encontraremos con el catalogo de exoplanetas que posee Atlas, tambien se mostrara el explorador virtual donde podran observar y modificar parametros de los graficos presentados en Atlas, tales como masa de planetas en funcion de la Tierra, exentricidad orbital, y otras mas que estan disponibles en la web.
+Otra caracteristica que pueden ir modificando es el mapa de color de los exoplanetas mostrados en el grafico.
