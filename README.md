@@ -28,7 +28,7 @@ source .venv/bin/activate
 
 ```bash
 (revisar texto de requerimientos):
-pip instal ...
+pip install ...
 ```
 
 ### 4. Ejecutar la aplicación:
