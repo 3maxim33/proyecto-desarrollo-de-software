@@ -29,14 +29,14 @@ cd proyecto-desarrollo-de-software
 
 
 
-### 3. Instalar dependencias:
+### 2. Instalar dependencias:
 
 ```bash
 (revisar texto de requerimientos):
 pip install ...
 ```
 
-### 4. Ejecutar la aplicación:
+### 3. Ejecutar la aplicación:
 
 ```bash
 streamlit run app.py
