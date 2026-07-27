@@ -27,7 +27,8 @@ source .venv/bin/activate
 ### 3. Instalar dependencias:
 
 ```bash
-pip install -r requirimientos.txt
+(revisar texto de requerimientos):
+pip instal ...
 ```
 
 ### 4. Ejecutar la aplicación:
