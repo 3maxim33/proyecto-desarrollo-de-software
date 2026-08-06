@@ -1,18 +1,36 @@
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import quote_plus
+import json
 
-import matplotlib.pyplot as plt
 import pandas as pd
-import seaborn as sns
 
+
+# ============================================================
+# NASA EXOPLANET ARCHIVE
+# ============================================================
+
+BASE_API_URL = "https://exoplanetarchive.ipac.caltech.edu/TAP/sync"
+TAP_QUERY = "select * from ps where default_flag=1"
+API_URL = f"{BASE_API_URL}?query={quote_plus(TAP_QUERY)}&format=csv"
+
+
+# ============================================================
+# RUTAS
+# ============================================================
 
 ROOT = Path(__file__).resolve().parent
-CSV_PATH = ROOT / "exoplanets_ps_default.csv"
-OUTPUT_DIR = ROOT / "outputs"
-PLOTS_DIR = OUTPUT_DIR / "plots"
-SUMMARY_PATH = OUTPUT_DIR / "summary.md"
 
+OUTPUT_DIR = ROOT / "outputs"
+CSV_PATH = OUTPUT_DIR / "exoplanets_ps_default.csv"
+METADATA_PATH = OUTPUT_DIR / "metadata.json"
+
+
+# ============================================================
+# COLUMNAS
+# ============================================================
 
 KEY_COLUMNS = [
     "pl_name",
@@ -29,38 +47,92 @@ KEY_COLUMNS = [
     "st_teff",
 ]
 
+NUMERIC_COLUMNS = [
+    "sy_pnum",
+    "pl_orbsmax",
+    "pl_orbper",
+    "pl_rade",
+    "pl_bmasse",
+    "pl_orbeccen",
+    "st_mass",
+    "st_teff",
+    "sy_snum",
+]
 
 PLOT_COLUMNS = {
     "pl_orbsmax": "Semieje mayor (AU)",
     "pl_orbper": "Período orbital (días)",
-    "pl_rade": "Radio del planeta (Tierras)",
-    "pl_bmasse": "Masa del planeta (Tierras)",
+    "pl_rade": "Radio del planeta (radios terrestres)",
+    "pl_bmasse": "Masa del planeta (masas terrestres)",
     "pl_orbeccen": "Excentricidad orbital",
-    "st_mass": "Masa estelar (soles)",
+    "st_mass": "Masa estelar (masas solares)",
     "st_teff": "Temperatura estelar (K)",
     "sy_pnum": "Planetas reportados en el sistema",
 }
 
 
-def load_catalog() -> pd.DataFrame:
-    df = pd.read_csv(CSV_PATH, low_memory=False)
+# ============================================================
+# FUNCIONES
+# ============================================================
 
-    numeric_columns = [
-        "sy_pnum",
-        "pl_orbsmax",
-        "pl_orbper",
-        "pl_rade",
-        "pl_bmasse",
-        "pl_orbeccen",
-        "st_mass",
-        "st_teff",
-    ]
-    for column in numeric_columns:
-        df[column] = pd.to_numeric(df[column], errors="coerce")
+def ensure_directories() -> None:
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    df["system_planet_count"] = df.groupby("hostname")["pl_name"].transform("count")
-    df["planet_suffix"] = df["pl_name"].str.extract(r" ([b-z])$", expand=False)
+
+def clean_catalog(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.copy()
+
+    for column in NUMERIC_COLUMNS:
+        if column in df.columns:
+            df[column] = pd.to_numeric(df[column], errors="coerce")
+
+    if "hostname" in df.columns and "pl_name" in df.columns:
+        df["system_planet_count"] = df.groupby("hostname")["pl_name"].transform("count")
+
+    if "pl_name" in df.columns:
+        df["planet_suffix"] = df["pl_name"].astype(str).str.extract(
+            r" ([b-z])$",
+            expand=False,
+        )
+
     return df
+
+
+def save_csv_atomically(df: pd.DataFrame, path: Path) -> None:
+    ensure_directories()
+
+    temporary_path = path.with_suffix(".tmp.csv")
+    df.to_csv(temporary_path, index=False, encoding="utf-8")
+    temporary_path.replace(path)
+
+
+def write_metadata(df: pd.DataFrame) -> None:
+    ensure_directories()
+
+    metadata = {
+        "downloaded_at_utc": datetime.now(timezone.utc).isoformat(),
+        "source": "NASA Exoplanet Archive",
+        "tap_query": TAP_QUERY,
+        "api_url": API_URL,
+        "csv_path": str(CSV_PATH),
+        "rows": int(len(df)),
+        "columns": int(len(df.columns)),
+    }
+
+    METADATA_PATH.write_text(
+        json.dumps(metadata, indent=2, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+
+def read_metadata() -> dict:
+    if not METADATA_PATH.exists():
+        return {}
+
+    try:
+        return json.loads(METADATA_PATH.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return {}
 
 
 def available_plot_columns(df: pd.DataFrame) -> dict[str, str]:
@@ -71,187 +143,66 @@ def available_plot_columns(df: pd.DataFrame) -> dict[str, str]:
     }
 
 
-def write_summary(df: pd.DataFrame) -> None:
-    OUTPUT_DIR.mkdir(exist_ok=True)
-    PLOTS_DIR.mkdir(exist_ok=True)
+def download_catalog() -> pd.DataFrame:
+    """
+    Descarga el catálogo actualizado desde NASA Exoplanet Archive,
+    limpia tipos numéricos y reemplaza el CSV local.
+    """
+    ensure_directories()
 
-    counts = df[KEY_COLUMNS].notna().sum().sort_values(ascending=False)
-    top_methods = df["discoverymethod"].value_counts().head(8)
-    top_systems = (
-        df.groupby("hostname")
-        .agg(
-            planets=("pl_name", "count"),
-            names=("pl_name", lambda s: ", ".join(s.head(8))),
-        )
-        .sort_values(["planets", "hostname"], ascending=[False, True])
-        .head(10)
-    )
+    df = pd.read_csv(API_URL, low_memory=False)
+    df = clean_catalog(df)
 
-    lines = [
-        "# Resumen inicial del catálogo PS",
-        "",
-        f"- Filas: {len(df)}",
-        f"- Columnas: {len(df.columns)}",
-        "- Fuente: tabla `ps` del NASA Exoplanet Archive con `default_flag = 1`.",
-        "",
-        "## Cobertura de columnas clave",
-        "",
-    ]
-    lines.extend(
-        f"- `{column}`: {int(value)} valores no nulos" for column, value in counts.items()
-    )
-    lines.extend(
-        [
-            "",
-            "## Métodos de descubrimiento más frecuentes",
-            "",
-        ]
-    )
-    lines.extend(f"- `{method}`: {count}" for method, count in top_methods.items())
-    lines.extend(
-        [
-            "",
-            "## Sistemas con más planetas en la tabla",
-            "",
-        ]
-    )
-    lines.extend(
-        f"- `{hostname}`: {int(row.planets)} planetas ({row.names})"
-        for hostname, row in top_systems.iterrows()
-    )
+    save_csv_atomically(df, CSV_PATH)
+    write_metadata(df)
 
-    SUMMARY_PATH.write_text("\n".join(lines), encoding="utf-8")
+    return df
 
 
-def scatter_plot(
-    df: pd.DataFrame,
-    *,
-    x: str,
-    y: str,
-    color: str | None,
-    title: str,
-    filename: str,
-    xscale: str = "log",
-    yscale: str = "log",
-) -> None:
-    cols = [x, y] + ([color] if color else [])
-    plot_df = df[cols].dropna().copy()
-    plot_df = plot_df[(plot_df[x] > 0) & (plot_df[y] > 0)]
+def load_local_catalog() -> pd.DataFrame:
+    """
+    Carga el CSV local.
+    """
+    if not CSV_PATH.exists():
+        raise FileNotFoundError(f"No existe el CSV local: {CSV_PATH}")
 
-    plt.figure(figsize=(10, 7))
-    sns.scatterplot(
-        data=plot_df,
-        x=x,
-        y=y,
-        hue=color,
-        alpha=0.7,
-        s=35,
-        linewidth=0,
-        palette="viridis" if color else None,
-        legend="brief" if color else False,
-    )
-    plt.xscale(xscale)
-    plt.yscale(yscale)
-    plt.title(title)
-    plt.xlabel(x)
-    plt.ylabel(y)
-    plt.tight_layout()
-    plt.savefig(PLOTS_DIR / filename, dpi=180)
-    plt.close()
+    df = pd.read_csv(CSV_PATH, low_memory=False)
+    df = clean_catalog(df)
+
+    return df
 
 
-def plot_method_comparison(df: pd.DataFrame) -> None:
-    methods = ["Transit", "Radial Velocity", "Microlensing", "Imaging"]
-    plot_df = df[
-        df["discoverymethod"].isin(methods)
-        & df["pl_orbsmax"].notna()
-        & df["pl_bmasse"].notna()
-        & (df["pl_orbsmax"] > 0)
-        & (df["pl_bmasse"] > 0)
-    ].copy()
+def load_catalog(force_download: bool = False) -> pd.DataFrame:
+    """
+    Función usada por app.py.
 
-    plt.figure(figsize=(10, 7))
-    sns.scatterplot(
-        data=plot_df,
-        x="pl_orbsmax",
-        y="pl_bmasse",
-        hue="discoverymethod",
-        alpha=0.75,
-        s=40,
-        linewidth=0,
-    )
-    plt.xscale("log")
-    plt.yscale("log")
-    plt.title("Masa vs semieje mayor por método de descubrimiento")
-    plt.xlabel("pl_orbsmax")
-    plt.ylabel("pl_bmasse")
-    plt.tight_layout()
-    plt.savefig(PLOTS_DIR / "mass_vs_semimajor_by_method.png", dpi=180)
-    plt.close()
+    force_download=False:
+        - carga el CSV local si existe;
+        - si no existe, descarga el catálogo una vez.
 
+    force_download=True:
+        - descarga el catálogo actualizado desde NASA;
+        - reemplaza outputs/exoplanets_ps_default.csv.
 
-def plot_multiplanet_histogram(df: pd.DataFrame) -> None:
-    counts = (
-        df.groupby("hostname")["pl_name"]
-        .count()
-        .rename("planet_count")
-        .reset_index()
-    )
-    plt.figure(figsize=(9, 6))
-    sns.histplot(counts, x="planet_count", discrete=True, binwidth=1, color="#1f77b4")
-    plt.title("Cantidad de planetas por sistema")
-    plt.xlabel("Planetas en el sistema")
-    plt.ylabel("Número de sistemas")
-    plt.tight_layout()
-    plt.savefig(PLOTS_DIR / "planets_per_system_histogram.png", dpi=180)
-    plt.close()
+    Si la descarga falla, pero ya existe un CSV local, usa el CSV anterior.
+    """
+    ensure_directories()
 
+    if force_download:
+        try:
+            return download_catalog()
+        except Exception:
+            if CSV_PATH.exists():
+                return load_local_catalog()
+            raise
 
-def main() -> None:
-    sns.set_theme(style="whitegrid")
-    df = load_catalog()
-    write_summary(df)
+    if CSV_PATH.exists():
+        return load_local_catalog()
 
-    scatter_plot(
-        df,
-        x="pl_orbsmax",
-        y="pl_bmasse",
-        color=None,
-        title="Masa del planeta vs semieje mayor",
-        filename="mass_vs_semimajor.png",
-    )
-    scatter_plot(
-        df,
-        x="pl_orbsmax",
-        y="pl_rade",
-        color=None,
-        title="Radio del planeta vs semieje mayor",
-        filename="radius_vs_semimajor.png",
-    )
-    scatter_plot(
-        df,
-        x="pl_orbper",
-        y="pl_orbsmax",
-        color="pl_orbeccen",
-        title="Período orbital vs semieje mayor (color = excentricidad)",
-        filename="period_vs_semimajor_eccentricity.png",
-        yscale="log",
-    )
-    scatter_plot(
-        df,
-        x="st_teff",
-        y="pl_rade",
-        color=None,
-        title="Radio del planeta vs temperatura estelar",
-        filename="radius_vs_stellar_temperature.png",
-        xscale="log",
-    )
-    plot_method_comparison(df)
-    plot_multiplanet_histogram(df)
-
-    print(f"Summary written to: {SUMMARY_PATH}")
-    print(f"Plots written to: {PLOTS_DIR}")
+    return download_catalog()
 
 
 if __name__ == "__main__":
-    main()
+    catalog = load_catalog(force_download=True)
+    print(f"Catálogo actualizado: {len(catalog)} filas")
+    print(f"CSV guardado en: {CSV_PATH}")
