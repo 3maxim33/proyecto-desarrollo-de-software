@@ -17,6 +17,12 @@ from explore_exoplanets import (
 
 ROOT = Path(__file__).resolve().parent
 
+PLOTLY_CONFIG = {
+    "responsive": True,
+    "displaylogo": False,
+    "scrollZoom": False,
+}
+
 PRESETS = {
     "Masa vs semieje mayor": {
         "x": "pl_orbsmax",
@@ -53,7 +59,7 @@ st.set_page_config(
     page_title="Atlas de Exoplanetas",
     page_icon=".",
     layout="wide",
-    initial_sidebar_state="expanded",
+    initial_sidebar_state="auto",
 )
 
 
@@ -154,6 +160,208 @@ def apply_theme() -> None:
         hr {
             border-color: rgba(255,255,255,0.1);
         }
+
+        /* =========================================================
+           LAYOUT RESPONSIVE GENERAL
+           ========================================================= */
+
+        .block-container {
+            max-width: 1600px;
+            padding-top: 1.35rem;
+            padding-bottom: 2rem;
+            padding-left: clamp(1rem, 3vw, 3rem);
+            padding-right: clamp(1rem, 3vw, 3rem);
+        }
+
+        [data-testid="stMainBlockContainer"] {
+            width: 100%;
+        }
+
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            border-radius: 18px;
+        }
+
+        [data-testid="stPlotlyChart"],
+        [data-testid="stDataFrame"] {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        [data-testid="stPlotlyChart"] > div,
+        [data-testid="stPlotlyChart"] iframe {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        /* Tabs desplazables en pantallas estrechas */
+        [data-baseweb="tab-list"] {
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            white-space: nowrap;
+        }
+
+        [data-baseweb="tab"] {
+            flex-shrink: 0;
+        }
+
+        /* Evita cortes desagradables de texto */
+        h1, h2, h3, p, label, [data-testid="stMetricLabel"] {
+            overflow-wrap: anywhere;
+        }
+
+        /* =========================================================
+           TABLET
+           ========================================================= */
+
+        @media (max-width: 1024px) {
+            .block-container {
+                padding-top: 1rem;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            .hero {
+                padding: 1.8rem;
+                border-radius: 20px;
+                margin-bottom: 1.4rem;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+
+        /* =========================================================
+           CELULAR
+           ========================================================= */
+
+        @media (max-width: 768px) {
+            .block-container {
+                padding-top: 0.7rem;
+                padding-bottom: 1.2rem;
+                padding-left: 0.65rem;
+                padding-right: 0.65rem;
+            }
+
+            .hero {
+                padding: 1.25rem 1rem;
+                border-radius: 16px;
+                margin-bottom: 1rem;
+                box-shadow: 0 10px 24px rgba(0,0,0,0.32);
+            }
+
+            .hero-kicker {
+                font-size: 0.70rem;
+                letter-spacing: 0.10em;
+                line-height: 1.35;
+            }
+
+            .hero h1 {
+                font-size: clamp(1.65rem, 8vw, 2rem);
+                line-height: 1.12;
+                margin-top: 0.25rem;
+            }
+
+            .hero p {
+                font-size: 0.92rem;
+                line-height: 1.45;
+                margin-bottom: 0;
+            }
+
+            h1 {
+                font-size: 1.75rem !important;
+            }
+
+            h2 {
+                font-size: 1.35rem !important;
+            }
+
+            h3 {
+                font-size: 1.12rem !important;
+            }
+
+            [data-testid="stMetric"] {
+                padding: 0.85rem;
+                border-radius: 13px;
+                min-height: 92px;
+            }
+
+            [data-testid="stMetricLabel"] p {
+                font-size: 0.78rem;
+                line-height: 1.2;
+            }
+
+            [data-testid="stMetricValue"] {
+                font-size: 1.25rem;
+            }
+
+            /* En móvil las columnas complejas se apilan verticalmente. */
+            [data-testid="stHorizontalBlock"] {
+                flex-wrap: wrap !important;
+                gap: 0.65rem !important;
+            }
+
+            [data-testid="column"] {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                min-width: 0 !important;
+            }
+
+            /* Controles grandes y fáciles de pulsar */
+            .stButton > button,
+            .stDownloadButton > button {
+                width: 100% !important;
+                min-height: 44px;
+            }
+
+            div[data-baseweb="select"],
+            div[data-baseweb="input"] {
+                width: 100% !important;
+            }
+
+            /* Tablas utilizables mediante desplazamiento horizontal. */
+            [data-testid="stDataFrame"] {
+                overflow-x: auto;
+            }
+
+            /* Reduce espacios verticales excesivos dentro de tarjetas. */
+            [data-testid="stVerticalBlockBorderWrapper"] {
+                border-radius: 14px;
+            }
+        }
+
+        /* =========================================================
+           CELULARES PEQUEÑOS
+           ========================================================= */
+
+        @media (max-width: 480px) {
+            .block-container {
+                padding-left: 0.45rem;
+                padding-right: 0.45rem;
+            }
+
+            .hero {
+                padding: 1rem 0.85rem;
+            }
+
+            .hero h1 {
+                font-size: 1.55rem;
+            }
+
+            .hero p {
+                font-size: 0.88rem;
+            }
+
+            [data-baseweb="tab"] {
+                padding-left: 0.65rem !important;
+                padding-right: 0.65rem !important;
+            }
+        }
         </style>
         """,
         unsafe_allow_html=True,
@@ -223,7 +431,7 @@ def build_scatter(
         plot_df = plot_df[plot_df[y] > 0]
 
     if plot_df.empty:
-        fig = px.scatter(pd.DataFrame({"x": [], "y": []}), x="x", y="y", height=650)
+        fig = px.scatter(pd.DataFrame({"x": [], "y": []}), x="x", y="y", height=560)
         fig.update_layout(
             title="No hay datos válidos para esta combinación de ejes y filtros.",
             paper_bgcolor="rgba(0,0,0,0)",
@@ -264,7 +472,7 @@ def build_scatter(
             "#f87171",
         ],
         opacity=0.85,
-        height=650,
+        height=560,
     )
 
     fig.update_traces(
@@ -279,7 +487,13 @@ def build_scatter(
         font=dict(color="#94a3b8"),
         margin=dict(l=20, r=20, t=60, b=20),
         legend_title_text="Atributo",
+        autosize=True,
         legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
             bgcolor="rgba(15, 23, 42, 0.5)",
             bordercolor="rgba(255,255,255,0.1)",
             borderwidth=1,
@@ -514,7 +728,7 @@ def render_visual_explorer(
             yaxis_title=format_axis_label(y_axis, labels),
         )
 
-        st.plotly_chart(figure, use_container_width=True)
+        st.plotly_chart(figure, use_container_width=True, config=PLOTLY_CONFIG)
 
 
 def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
@@ -573,6 +787,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#94a3b8"),
+                autosize=True,
                 margin=dict(l=10, r=20, t=10, b=20),
                 coloraxis_showscale=False,
                 yaxis_title="",
@@ -580,7 +795,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 xaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
             )
 
-            st.plotly_chart(bar, use_container_width=True)
+            st.plotly_chart(bar, use_container_width=True, config=PLOTLY_CONFIG)
 
     st.divider()
     st.subheader("Análisis de Sistema Específico")
@@ -682,6 +897,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
                 font=dict(color="#94a3b8"),
+                autosize=True,
                 showlegend=False,
                 xaxis_title=x_title,
                 yaxis_title=y_title,
@@ -698,7 +914,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 zerolinecolor="rgba(255, 255, 255, 0.05)",
             )
 
-            st.plotly_chart(sys_fig, use_container_width=True)
+            st.plotly_chart(sys_fig, use_container_width=True, config=PLOTLY_CONFIG)
 
         visible_sys_columns = [
             "pl_name",
@@ -755,6 +971,7 @@ def render_csv_data(filtered: pd.DataFrame) -> None:
             file_name="exoplanets_filtrados.csv",
             mime="text/csv",
             type="primary",
+            use_container_width=True,
         )
 
         st.caption(f"Fuente de datos: `{CSV_PATH.name}`")
