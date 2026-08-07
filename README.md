@@ -18,32 +18,10 @@ Ultimas etapas del codigo base y corrigiendo los errores.
 - Catalina Figueroa catalina.figueroa.b@usach.cl
 - Maximiliano Pasten maximiliano.pasten.u@usach.cl
 
-## Instalación
+## Ejecución
 
-### 1. Clonar el repositorio:
-
-```bash
-git clone https://github.com/3maxim33/proyecto-desarrollo-de-software.git
-cd proyecto-desarrollo-de-software
-```
-
-### 2. Instalar dependencias:
-
-```bash
-pip install -r requerimientos.txt
-```
-### 3. Ejecución de Pruebas:
-```bash
-pytest
-(Gracias a la libreria de pytest, con este comando podemos ejecutar las pruebas que llevamos hasta el momento del proyecto)
-```
-
-### 4. Ejecutar la aplicación:
-
-```bash
-PYTHONPATH=src streamlit run app.py
-(PYTHONPATH ya que "python" debe enfocarse en la carpeta de src para que streamlit pueda arrancar, ya que en esa carpeta se encuentran los archivos).
-```
+No requiere instalación. Solo abrir la el sitio web en su navegador favorito.
+https://atlas-de-exoplanetas.streamlit.app/
 
 ## Ejemplo de Uso (ya dentro de la web)
 
