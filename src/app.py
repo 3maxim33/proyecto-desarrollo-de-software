@@ -23,6 +23,27 @@ PLOTLY_CONFIG = {
     "scrollZoom": False,
 }
 
+# Paleta visual compartida entre la interfaz y los gráficos.
+# Mantenerla aquí evita que la web y Plotly se sientan como piezas separadas.
+PLOT_TEXT = "#e6eef8"
+PLOT_GRID = "rgba(190, 210, 235, 0.10)"
+PLOT_PALETTE = [
+    "#55c8ff",  # azul cielo
+    "#8b7cff",  # violeta
+    "#d58cff",  # magenta suave
+    "#63e6be",  # turquesa
+    "#f6c86b",  # ámbar
+    "#ff9f8f",  # coral
+]
+PLOT_CONTINUOUS_SCALE = [
+    "#17233d",
+    "#315b9e",
+    "#4fa7d8",
+    "#7c83ff",
+    "#b67de8",
+    "#e7a8ff",
+]
+
 PRESETS = {
     "Masa vs semieje mayor": {
         "x": "pl_orbsmax",
@@ -67,16 +88,29 @@ def apply_theme() -> None:
     st.markdown(
         """
         <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
         :root {
-            --bg-deep: #050b14;
-            --bg-accent: #0b172a;
-            --text-main: #e2e8f0;
-            --text-muted: #94a3b8;
-            --border-glow: rgba(56, 189, 248, 0.15);
-            --neon-blue: #38bdf8;
-            --neon-purple: #c084fc;
+            --bg-deep: #050812;
+            --bg-accent: #0a1425;
+            --surface: rgba(14, 25, 45, 0.74);
+            --surface-strong: rgba(17, 30, 52, 0.94);
+            --surface-hover: rgba(42, 64, 92, 0.88);
+
+            /* Contraste: los textos secundarios dejan de ser gris oscuro. */
+            --text-main: #eef5ff;
+            --text-soft: #d7e2f0;
+            --text-muted: #b7c4d6;
+
+            /* Acentos tomados de la paleta de los gráficos. */
+            --accent-cyan: #55c8ff;
+            --accent-violet: #8b7cff;
+            --accent-magenta: #d58cff;
+            --accent-teal: #63e6be;
+
+            --border-soft: rgba(190, 210, 235, 0.12);
+            --border-accent: rgba(85, 200, 255, 0.28);
+            --shadow: rgba(0, 0, 0, 0.30);
         }
 
         html, body, [class*="css"] {
@@ -85,20 +119,45 @@ def apply_theme() -> None:
 
         .stApp {
             background:
-                radial-gradient(circle at 15% 50%, rgba(56, 189, 248, 0.05), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(192, 132, 252, 0.05), transparent 25%),
-                linear-gradient(180deg, var(--bg-deep) 0%, #020617 100%);
+                radial-gradient(circle at 12% 42%, rgba(85, 200, 255, 0.07), transparent 28%),
+                radial-gradient(circle at 86% 24%, rgba(139, 124, 255, 0.08), transparent 30%),
+                radial-gradient(circle at 70% 88%, rgba(213, 140, 255, 0.04), transparent 24%),
+                linear-gradient(180deg, var(--bg-deep) 0%, #030712 100%);
             color: var(--text-main);
         }
 
+        /* =========================================================
+           TIPOGRAFÍA Y CONTRASTE GENERAL
+           ========================================================= */
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--text-main) !important;
+            letter-spacing: -0.015em;
+        }
+
+        p, label, li,
+        [data-testid="stCaptionContainer"],
+        [data-testid="stMarkdownContainer"] {
+            color: var(--text-soft);
+        }
+
+        [data-testid="stCaptionContainer"] p {
+            color: var(--text-muted) !important;
+        }
+
+        /* =========================================================
+           HERO
+           ========================================================= */
+
         .hero {
-            padding: 2.5rem;
-            background: linear-gradient(135deg, rgba(15, 23, 42, 0.8) 0%, rgba(30, 41, 59, 0.8) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.75rem 3rem;
+            background:
+                linear-gradient(135deg, rgba(14, 27, 48, 0.92) 0%, rgba(24, 38, 66, 0.80) 100%);
+            border: 1px solid var(--border-soft);
             border-radius: 24px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 2rem;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 18px 46px var(--shadow);
+            margin-bottom: 2.6rem;
             position: relative;
             overflow: hidden;
         }
@@ -106,59 +165,249 @@ def apply_theme() -> None:
         .hero::before {
             content: '';
             position: absolute;
-            top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-purple), transparent);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                var(--accent-cyan),
+                var(--accent-violet),
+                var(--accent-magenta),
+                transparent
+            );
         }
 
         .hero-kicker {
-            color: var(--neon-blue);
+            color: var(--accent-cyan) !important;
             text-transform: uppercase;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
             font-weight: 700;
             letter-spacing: 0.15em;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.65rem;
         }
 
         .hero h1 {
-            color: #ffffff;
+            color: #ffffff !important;
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            font-size: 2.8rem;
+            margin-bottom: 0.75rem;
+            font-size: 2.85rem;
+            line-height: 1.08;
         }
 
         .hero p {
-            color: var(--text-muted);
-            max-width: 800px;
-            font-size: 1.1rem;
-            line-height: 1.6;
+            color: var(--text-soft) !important;
+            max-width: 850px;
+            font-size: 1.08rem;
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        /* =========================================================
+           TARJETAS, MÉTRICAS Y CUERPO
+           ========================================================= */
+
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            border-radius: 18px;
+            border-color: var(--border-soft) !important;
+            background: rgba(10, 20, 37, 0.20);
         }
 
         [data-testid="stMetric"] {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            padding: 1.2rem;
+            background: linear-gradient(
+                145deg,
+                rgba(18, 32, 55, 0.86),
+                rgba(12, 23, 41, 0.80)
+            );
+            border: 1px solid var(--border-soft);
+            padding: 1.25rem;
             border-radius: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.18);
         }
 
         [data-testid="stMetricLabel"] p {
-            color: var(--text-muted);
+            color: var(--text-muted) !important;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
         }
 
         [data-testid="stMetricValue"] {
-            color: #ffffff;
+            color: #ffffff !important;
             font-weight: 700;
         }
 
+        /* Más aire entre bloques del contenido principal. */
+        [data-testid="stMainBlockContainer"] > div > div {
+            gap: 1.15rem;
+        }
+
+        [data-testid="stVerticalBlock"] {
+            gap: 1rem;
+        }
+
+        [data-testid="stHorizontalBlock"] {
+            gap: 1rem;
+        }
+
+        /* =========================================================
+           SIDEBAR: LEGIBILIDAD + CONTROLES
+           ========================================================= */
+
         [data-testid="stSidebar"] {
-            background: rgba(9, 14, 23, 0.95) !important;
-            border-right: 1px solid rgba(255,255,255,0.05);
+            background:
+                linear-gradient(180deg, rgba(8, 15, 28, 0.985), rgba(7, 13, 24, 0.985)) !important;
+            border-right: 1px solid var(--border-soft);
+        }
+
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h1,
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h2,
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h3,
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] h4 {
+            color: #f4f8ff !important;
+        }
+
+        [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+        [data-testid="stSidebar"] label,
+        [data-testid="stSidebar"] [data-testid="stCaptionContainer"] p,
+        [data-testid="stSidebar"] span {
+            color: var(--text-soft) !important;
+        }
+
+        [data-testid="stSidebar"] h3 {
+            margin-top: 0.25rem;
+            margin-bottom: 0.6rem;
+            font-size: 1.02rem;
+            font-weight: 700;
+        }
+
+        [data-testid="stSidebar"] hr {
+            border-color: rgba(190, 210, 235, 0.14) !important;
+            margin-top: 1.05rem;
+            margin-bottom: 1.05rem;
+        }
+
+        /* Inputs / selectores: fondos algo más claros que el sidebar. */
+        [data-testid="stSidebar"] div[data-baseweb="select"] > div,
+        [data-testid="stSidebar"] div[data-baseweb="input"] > div,
+        [data-testid="stSidebar"] div[data-baseweb="base-input"],
+        [data-testid="stSidebar"] input {
+            background-color: rgba(22, 37, 61, 0.96) !important;
+            color: #f3f7fd !important;
+            border-color: rgba(190, 210, 235, 0.16) !important;
+        }
+
+        [data-testid="stSidebar"] input::placeholder {
+            color: #93a7bf !important;
+            opacity: 1;
+        }
+
+        /* Menús desplegables de BaseWeb. */
+        div[data-baseweb="popover"] {
+            color: #eef5ff;
+        }
+
+        div[data-baseweb="popover"] ul,
+        div[data-baseweb="menu"] {
+            background: #111d30 !important;
+        }
+
+        div[data-baseweb="menu"] li {
+            color: #e8f0fa !important;
+        }
+
+        div[data-baseweb="menu"] li:hover {
+            background: #263b59 !important;
+            color: #ffffff !important;
+        }
+
+        /* Botones: corrige el hover oscuro que reducía la legibilidad. */
+        .stButton > button,
+        .stDownloadButton > button {
+            border: 1px solid rgba(85, 200, 255, 0.35) !important;
+            background: linear-gradient(
+                135deg,
+                rgba(40, 91, 128, 0.82),
+                rgba(71, 68, 139, 0.80)
+            ) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            transition:
+                background 160ms ease,
+                border-color 160ms ease,
+                transform 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        .stButton > button p,
+        .stDownloadButton > button p {
+            color: #ffffff !important;
+        }
+
+        .stButton > button:hover,
+        .stDownloadButton > button:hover {
+            background: linear-gradient(
+                135deg,
+                rgba(55, 115, 158, 0.98),
+                rgba(91, 82, 168, 0.96)
+            ) !important;
+            border-color: rgba(120, 217, 255, 0.78) !important;
+            color: #ffffff !important;
+            box-shadow: 0 7px 18px rgba(18, 91, 136, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .stButton > button:hover p,
+        .stDownloadButton > button:hover p {
+            color: #ffffff !important;
+        }
+
+        .stButton > button:focus,
+        .stDownloadButton > button:focus {
+            color: #ffffff !important;
+            border-color: var(--accent-cyan) !important;
+            box-shadow: 0 0 0 2px rgba(85, 200, 255, 0.18) !important;
+        }
+
+        /* Sliders / toggles: evita el rojo por defecto y usa el acento del sitio. */
+        [data-testid="stSidebar"] [data-baseweb="slider"] div[role="slider"] {
+            background-color: var(--accent-cyan) !important;
+            border-color: var(--accent-cyan) !important;
+        }
+
+        [data-testid="stSidebar"] [data-baseweb="slider"] > div > div > div > div {
+            background-color: var(--accent-cyan);
+        }
+
+        [data-testid="stSidebar"] [data-testid="stCheckbox"] input:checked + div,
+        [data-testid="stSidebar"] [role="switch"][aria-checked="true"] {
+            background-color: var(--accent-violet) !important;
+        }
+
+        /* Tabs coherentes con la misma paleta. */
+        [data-baseweb="tab-list"] {
+            gap: 0.35rem;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scrollbar-width: thin;
+            white-space: nowrap;
+        }
+
+        [data-baseweb="tab"] {
+            flex-shrink: 0;
+            color: var(--text-muted) !important;
+        }
+
+        [data-baseweb="tab"][aria-selected="true"] {
+            color: #ffffff !important;
+        }
+
+        [data-baseweb="tab-highlight"] {
+            background-color: var(--accent-cyan) !important;
         }
 
         hr {
-            border-color: rgba(255,255,255,0.1);
+            border-color: rgba(190, 210, 235, 0.12);
         }
 
         /* =========================================================
@@ -166,19 +415,15 @@ def apply_theme() -> None:
            ========================================================= */
 
         .block-container {
-            max-width: 1600px;
-            padding-top: 1.35rem;
-            padding-bottom: 2rem;
-            padding-left: clamp(1rem, 3vw, 3rem);
-            padding-right: clamp(1rem, 3vw, 3rem);
+            max-width: 1560px;
+            padding-top: 1.55rem;
+            padding-bottom: 3rem;
+            padding-left: clamp(1rem, 3.4vw, 3.6rem);
+            padding-right: clamp(1rem, 3.4vw, 3.6rem);
         }
 
         [data-testid="stMainBlockContainer"] {
             width: 100%;
-        }
-
-        [data-testid="stVerticalBlockBorderWrapper"] {
-            border-radius: 18px;
         }
 
         [data-testid="stPlotlyChart"],
@@ -193,19 +438,7 @@ def apply_theme() -> None:
             max-width: 100% !important;
         }
 
-        /* Tabs desplazables en pantallas estrechas */
-        [data-baseweb="tab-list"] {
-            overflow-x: auto;
-            overflow-y: hidden;
-            scrollbar-width: thin;
-            white-space: nowrap;
-        }
-
-        [data-baseweb="tab"] {
-            flex-shrink: 0;
-        }
-
-        /* Evita cortes desagradables de texto */
+        /* Evita cortes desagradables de texto. */
         h1, h2, h3, p, label, [data-testid="stMetricLabel"] {
             overflow-wrap: anywhere;
         }
@@ -219,12 +452,13 @@ def apply_theme() -> None:
                 padding-top: 1rem;
                 padding-left: 1rem;
                 padding-right: 1rem;
+                padding-bottom: 2rem;
             }
 
             .hero {
-                padding: 1.8rem;
+                padding: 1.9rem;
                 border-radius: 20px;
-                margin-bottom: 1.4rem;
+                margin-bottom: 1.7rem;
             }
 
             .hero h1 {
@@ -243,16 +477,16 @@ def apply_theme() -> None:
         @media (max-width: 768px) {
             .block-container {
                 padding-top: 0.7rem;
-                padding-bottom: 1.2rem;
+                padding-bottom: 1.4rem;
                 padding-left: 0.65rem;
                 padding-right: 0.65rem;
             }
 
             .hero {
-                padding: 1.25rem 1rem;
+                padding: 1.3rem 1.05rem;
                 border-radius: 16px;
-                margin-bottom: 1rem;
-                box-shadow: 0 10px 24px rgba(0,0,0,0.32);
+                margin-bottom: 1.15rem;
+                box-shadow: 0 10px 24px rgba(0,0,0,0.30);
             }
 
             .hero-kicker {
@@ -269,7 +503,7 @@ def apply_theme() -> None:
 
             .hero p {
                 font-size: 0.92rem;
-                line-height: 1.45;
+                line-height: 1.5;
                 margin-bottom: 0;
             }
 
@@ -286,7 +520,7 @@ def apply_theme() -> None:
             }
 
             [data-testid="stMetric"] {
-                padding: 0.85rem;
+                padding: 0.9rem;
                 border-radius: 13px;
                 min-height: 92px;
             }
@@ -303,7 +537,7 @@ def apply_theme() -> None:
             /* En móvil las columnas complejas se apilan verticalmente. */
             [data-testid="stHorizontalBlock"] {
                 flex-wrap: wrap !important;
-                gap: 0.65rem !important;
+                gap: 0.8rem !important;
             }
 
             [data-testid="column"] {
@@ -312,7 +546,6 @@ def apply_theme() -> None:
                 min-width: 0 !important;
             }
 
-            /* Controles grandes y fáciles de pulsar */
             .stButton > button,
             .stDownloadButton > button {
                 width: 100% !important;
@@ -324,12 +557,10 @@ def apply_theme() -> None:
                 width: 100% !important;
             }
 
-            /* Tablas utilizables mediante desplazamiento horizontal. */
             [data-testid="stDataFrame"] {
                 overflow-x: auto;
             }
 
-            /* Reduce espacios verticales excesivos dentro de tarjetas. */
             [data-testid="stVerticalBlockBorderWrapper"] {
                 border-radius: 14px;
             }
@@ -436,7 +667,7 @@ def build_scatter(
             title="No hay datos válidos para esta combinación de ejes y filtros.",
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            font=dict(color="#94a3b8"),
+            font=dict(color=PLOT_TEXT),
         )
         return fig
 
@@ -462,15 +693,8 @@ def build_scatter(
         size=size,
         hover_name="pl_name" if "pl_name" in plot_df.columns else None,
         hover_data=hover_data,
-        color_continuous_scale="Viridis" if continuous else None,
-        color_discrete_sequence=[
-            "#38bdf8",
-            "#c084fc",
-            "#f472b6",
-            "#fbbf24",
-            "#34d399",
-            "#f87171",
-        ],
+        color_continuous_scale=PLOT_CONTINUOUS_SCALE if continuous else None,
+        color_discrete_sequence=PLOT_PALETTE,
         opacity=0.85,
         height=560,
     )
@@ -484,7 +708,7 @@ def build_scatter(
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(color="#94a3b8"),
+        font=dict(color=PLOT_TEXT),
         margin=dict(l=20, r=20, t=60, b=20),
         legend_title_text="Atributo",
         autosize=True,
@@ -494,13 +718,13 @@ def build_scatter(
             y=1.02,
             xanchor="left",
             x=0,
-            bgcolor="rgba(15, 23, 42, 0.5)",
-            bordercolor="rgba(255,255,255,0.1)",
+            bgcolor="rgba(15, 27, 47, 0.82)",
+            bordercolor="rgba(190,210,235,0.18)",
             borderwidth=1,
         ),
     )
 
-    grid_color = "rgba(255, 255, 255, 0.05)"
+    grid_color = PLOT_GRID
 
     fig.update_xaxes(
         type="log" if log_x else "linear",
@@ -779,25 +1003,27 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 y="parámetro",
                 orientation="h",
                 color="valores",
-                color_continuous_scale="Purp",
+                color_continuous_scale=PLOT_CONTINUOUS_SCALE,
                 height=450,
             )
 
             bar.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#94a3b8"),
+                font=dict(color=PLOT_TEXT),
                 autosize=True,
                 margin=dict(l=10, r=20, t=10, b=20),
                 coloraxis_showscale=False,
                 yaxis_title="",
                 xaxis_title="Registros no nulos",
-                xaxis=dict(gridcolor="rgba(255,255,255,0.05)"),
+                xaxis=dict(gridcolor=PLOT_GRID),
             )
 
             st.plotly_chart(bar, use_container_width=True, config=PLOTLY_CONFIG)
 
+    st.markdown("<div style='height:0.55rem'></div>", unsafe_allow_html=True)
     st.divider()
+    st.markdown("<div style='height:0.35rem'></div>", unsafe_allow_html=True)
     st.subheader("Análisis de Sistema Específico")
 
     if system_summary.empty:
@@ -877,14 +1103,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
                 text="pl_name",
                 log_x=True,
                 log_y=True,
-                color_discrete_sequence=[
-                    "#38bdf8",
-                    "#c084fc",
-                    "#f472b6",
-                    "#fbbf24",
-                    "#34d399",
-                    "#f87171",
-                ],
+                color_discrete_sequence=PLOT_PALETTE,
                 height=400,
             )
 
@@ -896,7 +1115,7 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
             sys_fig.update_layout(
                 paper_bgcolor="rgba(0,0,0,0)",
                 plot_bgcolor="rgba(0,0,0,0)",
-                font=dict(color="#94a3b8"),
+                font=dict(color=PLOT_TEXT),
                 autosize=True,
                 showlegend=False,
                 xaxis_title=x_title,
@@ -905,13 +1124,13 @@ def render_top_systems(filtered: pd.DataFrame, labels: dict[str, str]) -> None:
             )
 
             sys_fig.update_xaxes(
-                gridcolor="rgba(255, 255, 255, 0.05)",
-                zerolinecolor="rgba(255, 255, 255, 0.05)",
+                gridcolor=PLOT_GRID,
+                zerolinecolor=PLOT_GRID,
             )
 
             sys_fig.update_yaxes(
-                gridcolor="rgba(255, 255, 255, 0.05)",
-                zerolinecolor="rgba(255, 255, 255, 0.05)",
+                gridcolor=PLOT_GRID,
+                zerolinecolor=PLOT_GRID,
             )
 
             st.plotly_chart(sys_fig, use_container_width=True, config=PLOTLY_CONFIG)
